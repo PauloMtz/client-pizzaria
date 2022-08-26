@@ -1,0 +1,17 @@
+/*
+  - instalar o SASS
+      yar add sass
+
+  - renomear os arquivos .css para .scss
+
+  - foram adicionadas no VsCode as extensões css-module e sass
+*/
+
+.container{
+  color: red;
+
+  h1 {
+    font-size: 100px;
+    color: blue;
+  }
+}
