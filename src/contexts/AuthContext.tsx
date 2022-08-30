@@ -1,10 +1,13 @@
 import { createContext, ReactNode, useState } from 'react';
+import { destroyCookie } from '../../node_modules/nookies/dist/index';
+import Router from '../../node_modules/next/router';
 
 // define o tipo de contexto
 type AuthContextData = {
   user: UserProps;
   isAuthenticated: boolean;
   signIn: (credentials: SignInProps) => Promise<void>;
+  signOut: () => void;
 }
 
 type UserProps = {
@@ -25,6 +28,16 @@ type AuthProviderProps = {
 // esse contexto irá seguir o AuthContextData definido acima
 export const AuthContext = createContext({} as AuthContextData);
 
+// efetua o logout do usuário
+export function signOut() {
+  try {
+    destroyCookie(undefined, '@app_client_pizzaria.token');
+    Router.push('/');
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 // o provider serve para qualquer componente ter acesso
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>()
@@ -37,7 +50,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, signIn }}>
+    <AuthContext.Provider value={{ user, isAuthenticated, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   )
