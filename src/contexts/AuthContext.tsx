@@ -1,6 +1,8 @@
 import { createContext, ReactNode, useState } from 'react';
-import { destroyCookie } from '../../node_modules/nookies/dist/index';
+import { destroyCookie, setCookie, parseCookies } from '../../node_modules/nookies/dist/index';
+// yarn add axios nookies jwt-decode
 import Router from '../../node_modules/next/router';
+import { api } from '../services/apiClient';
 
 // define o tipo de contexto
 type AuthContextData = {
@@ -45,8 +47,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // signIn foi o nome dado num dos tipos do contexto (acima)
   async function signIn({email, password}: SignInProps) {
-    console.log("E-mail: ", email);
-    console.log("Senha: ", password);
+
+    try {
+      const response = await api.post("/login", {
+        email, password
+      });
+
+      //console.log(response.data);
+
+      // pega os dados disponibilizados pela requisição (pela api)
+      const { id, name, token } = response.data;
+      setCookie(undefined, '@app_client_pizzaria.token', token, {
+        maxAge: 60 * 60 * 24, // 24 horas
+        path: "/" // todo mundo tem acesso ao cookie
+      });
+
+      setUser({ id, name, email });
+
+      // passar o token para todas as rotas
+      api.defaults.headers['Authorization'] = `Bearer ${token}`;
+
+      // redireciona usuário para a página inicial
+      Router.push('/dashboard');
+    } catch (error) {
+      console.log(">>> Erro no login: ", error);
+    }
   }
 
   return (
