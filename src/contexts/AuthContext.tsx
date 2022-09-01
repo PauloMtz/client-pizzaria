@@ -66,7 +66,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // pega os dados disponibilizados pela requisição (pela api)
       const { id, name, token } = response.data;
       setCookie(undefined, '@app_client_pizzaria.token', token, {
-        maxAge: 60 * 60 * 24, // 24 horas
+        maxAge: 60 * 60 * 12, // 12 horas
         path: "/" // todo mundo tem acesso ao cookie
       });
 

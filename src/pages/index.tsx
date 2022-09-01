@@ -7,6 +7,7 @@ import { Input } from "../components/ui/Input/index";
 import { Button } from "../components/ui/Button/index";
 import Link from "../../node_modules/next/link";
 import { toast } from 'react-toastify'; // yarn add react-toastify
+import { naoLogados } from "../utils/naoLogados";
 
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -63,3 +64,9 @@ export default function Home() {
     </>
   )
 }
+
+export const getServerSideProps = naoLogados(async (context) => {
+  return {
+    props: {}
+  }
+});
