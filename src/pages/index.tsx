@@ -19,12 +19,20 @@ export default function Home() {
   async function handleLogin(event:FormEvent) {
     event.preventDefault();
 
+    if (email === '' || password === '') {
+      alert('Preencha os campos corretamente.');
+      return;
+    }
+
+    setLoading(true);
+
     let dados = {
       email,
       password,
     }
 
     await signIn(dados);
+    setLoading(false);
   }
 
   return (
@@ -43,7 +51,7 @@ export default function Home() {
             <Input placeholder="Sua senha" type="password"
               value={password} onChange={(e) => setPassword(e.target.value)} />
 
-            <Button type="submit" loading={false}>Entrar</Button>
+            <Button type="submit" loading={loading}>Entrar</Button>
           </form>
 
           <Link href="/signup">

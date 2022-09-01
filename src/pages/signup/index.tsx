@@ -1,3 +1,4 @@
+import { FormEvent, useState } from 'react';
 import Head from '../../../node_modules/next/head';
 import Image from '../../../node_modules/next/image';
 import styles from '../../../styles/home.module.scss';
@@ -10,6 +11,22 @@ import { Button } from '../../components/ui/Button/index';
 import Link from '../../../node_modules/next/link';
 
 export default function SignUp() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSignUp(event: FormEvent) {
+    event.preventDefault();
+
+    if (name === '' || email === '' || password === '') {
+      alert("Preencha os campos corretamente.");
+      return;
+    }
+
+    setLoading(true);
+  }
+
   return (
     <>
     <Head>
@@ -21,14 +38,17 @@ export default function SignUp() {
       <div className={styles.login}>
         <h1>Criando sua conta</h1>
 
-        <form>
-          <Input placeholder="Digite seu nome" type="text" />
+        <form onSubmit={handleSignUp}>
+          <Input placeholder="Digite seu nome" type="text"
+            value={name} onChange={(e) => setName(e.target.value)} />
 
-          <Input placeholder="Digite seu email" type="text" />
+          <Input placeholder="Digite seu email" type="text"
+            value={email} onChange={(e) => setEmail(e.target.value)} />
 
-          <Input placeholder="Sua senha" type="password" />
+          <Input placeholder="Sua senha" type="password"
+            value={password} onChange={(e) => setPassword(e.target.value)} />
           
-          <Button type="submit" loading={false}>
+          <Button type="submit" loading={loading}>
             Cadastrar
           </Button>
         </form>
