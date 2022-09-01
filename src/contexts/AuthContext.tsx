@@ -3,6 +3,7 @@ import { destroyCookie, setCookie, parseCookies } from '../../node_modules/nooki
 // yarn add axios nookies jwt-decode
 import Router from '../../node_modules/next/router';
 import { api } from '../services/apiClient';
+import { toast } from '../../node_modules/react-toastify'; // yarn add react-toastify
 
 // define o tipo de contexto
 type AuthContextData = {
@@ -74,9 +75,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // passar o token para todas as rotas
       api.defaults.headers['Authorization'] = `Bearer ${token}`;
 
+      toast.success('Login efetuado com sucesso!');
+
       // redireciona usuário para a página inicial
       Router.push('/dashboard');
     } catch (error) {
+      toast.error('Credenciais inválidas');
       console.log(">>> Erro no login: ", error);
     }
   }
@@ -87,8 +91,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         name, email, password
       });
 
+      toast.success('Cadastro efetuado com sucesso!');
+
       Router.push('/');
     } catch (error) {
+      toast.error('Ocorreu um erro inesperado');
       console.log('>>> Erro ao cadastrar: ', error);
     }
   }

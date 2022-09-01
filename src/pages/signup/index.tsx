@@ -10,6 +10,7 @@ import { Button } from '../../components/ui/Button/index';
 
 import Link from '../../../node_modules/next/link';
 import { AuthContext } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify'; // yarn add react-toastify
 
 export default function SignUp() {
   const { signUp } = useContext(AuthContext);
@@ -22,7 +23,7 @@ export default function SignUp() {
     event.preventDefault();
 
     if (name === '' || email === '' || password === '') {
-      alert("Preencha os campos corretamente.");
+      toast.error("Preencha os campos corretamente.");
       return;
     }
 

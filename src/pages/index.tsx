@@ -6,6 +6,7 @@ import styles from "../../styles/home.module.scss";
 import { Input } from "../components/ui/Input/index";
 import { Button } from "../components/ui/Button/index";
 import Link from "../../node_modules/next/link";
+import { toast } from 'react-toastify'; // yarn add react-toastify
 
 import { AuthContext } from "../contexts/AuthContext";
 
@@ -20,7 +21,7 @@ export default function Home() {
     event.preventDefault();
 
     if (email === '' || password === '') {
-      alert('Preencha os campos corretamente.');
+      toast.warning('Preencha os campos corretamente.');
       return;
     }
 
