@@ -6,7 +6,7 @@ import { FiLogOut } from 'react-icons/fi'
 
 import { AuthContext } from '../../contexts/AuthContext'
 
-export function Header(){
+export function Header() {
 
   const { signOut } = useContext(AuthContext)
 
