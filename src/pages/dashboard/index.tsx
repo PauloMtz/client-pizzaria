@@ -1,3 +1,5 @@
+import { usuariosLogados } from "../../utils/usuariosLogados"
+
 export default function Dashboard() {
     return (
         <div>
@@ -5,3 +7,9 @@ export default function Dashboard() {
         </div>
     )
 }
+
+export const getServerSideProps = usuariosLogados(async (context) => {
+    return {
+        props: {}
+    }
+});
