@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 import { destroyCookie, setCookie, parseCookies } from '../../node_modules/nookies/dist/index';
 // yarn add axios nookies jwt-decode
 import Router from '../../node_modules/next/router';
@@ -52,6 +52,23 @@ export function signOut() {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<UserProps>()
   const isAuthenticated = !!user; // '!!' converte para boolean
+
+  // toda vez que carrega a página, aciona o useEffect
+  useEffect(() => {
+    // pega o token de quem está logado
+    const { '@app_client_pizzaria.token': token } = parseCookies();
+
+    if (token) {
+      api.get('/api/me').then(response => {
+        const { id, name, email } = response.data;
+        setUser({ id, name, email });
+      })
+      .catch(() => {
+        // se der erro, efetua o logout
+        signOut();
+      });
+    }
+  }, []);
 
   // signIn foi o nome dado num dos tipos do contexto (acima)
   async function signIn({email, password}: SignInProps) {

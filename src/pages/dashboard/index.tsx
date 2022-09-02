@@ -1,9 +1,17 @@
+import Head from "../../../node_modules/next/head";
+import { Header } from "../../components/Header/index";
 import { usuariosLogados } from "../../utils/usuariosLogados"
 
 export default function Dashboard() {
     return (
         <div>
-            <h1>Página inicial</h1>
+            <Head>
+                <title>Painel - Sujeito Pizza</title>
+            </Head>
+            <div>
+                <Header />
+                <h1>Painel</h1>
+            </div>
         </div>
     )
 }
