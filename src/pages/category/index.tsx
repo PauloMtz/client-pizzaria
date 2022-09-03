@@ -4,6 +4,7 @@ import { Header } from '../../components/Header/index';
 import styles from './styles.module.scss';
 import { setupApiClient } from '../../services/api';
 import { toast } from 'react-toastify';
+import { usuariosLogados } from '../../utils/usuariosLogados';
 
 export default function Category() {
   const [name, setName] = useState('')
@@ -48,3 +49,10 @@ export default function Category() {
     </>
   )
 }
+
+export const getServerSideProps = usuariosLogados(async (ctx) => {
+
+  return {
+    props: {}
+  }
+});
