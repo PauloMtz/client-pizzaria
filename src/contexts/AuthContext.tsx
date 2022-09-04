@@ -97,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // redireciona usuário para a página inicial
       Router.push('/dashboard');
     } catch (error) {
-      toast.error('Credenciais inválidas');
+      toast.error('Não foi possível fazer login');
       console.log(">>> Erro no login: ", error);
     }
   }
