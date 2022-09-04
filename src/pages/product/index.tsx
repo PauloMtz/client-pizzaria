@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, FormEvent, useState } from 'react';
 import Head from '../../../node_modules/next/head';
 
 import { FiUpload } from 'react-icons/fi';
@@ -7,6 +7,8 @@ import styles from './styles.module.scss';
 import { Header } from '../../components/Header/index';
 import { usuariosLogados } from '../../utils/usuariosLogados';
 import { setupApiClient } from '../../services/api';
+import { toast } from 'react-toastify';
+import Router from '../../../node_modules/next/router';
 
 // 2. transforma em props
 type ItemProps = {
@@ -21,6 +23,11 @@ interface CategoryProps {
 
 export default function Product({ categoriesList }: CategoryProps) {
   //console.log(categoriesList);
+
+  // useState para pegar o que for enviado pelo formulário
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+  const [description, setDescription] = useState('');
 
   const [avatarUrl, setAvatarUrl] = useState('');
   const [imageAvatar, setImageAvatar] = useState(null);
@@ -55,6 +62,35 @@ export default function Product({ categoriesList }: CategoryProps) {
     setCategorySelected(event.target.value);
   }
 
+  async function handleRegister(event: FormEvent) {
+    event.preventDefault();
+
+    try {
+      const dados = new FormData();
+
+      if (name === '' || price === '' || description === '' || imageAvatar === null) {
+        toast.error('Preencha os campos corretamente');
+        return;
+      }
+
+      // pega os dados enviados pelo formulário
+      dados.append('name', name);
+      dados.append('price', price);
+      dados.append('description', description);
+      dados.append('category_id', categories[categorySelected].id);
+      // 'file' foi o nome dado lá no backend (campos no insomnia)
+      dados.append('file', imageAvatar);
+
+      const apiClient = setupApiClient();
+      await apiClient.post('/api/products', dados);
+      toast.success('Produto cadastrado com sucesso!');
+      Router.push('/dashboard');
+    } catch (error) {
+      toast.error('Error ao cadastrar produto');
+      console.log('>>> Erro ao cadastrar produto: ', error);
+    }
+  }
+
   return (
     <>
       <Head>
@@ -63,7 +99,7 @@ export default function Product({ categoriesList }: CategoryProps) {
       <div>
         <Header/>
 
-        <main className={styles.container}>
+        <main className={styles.container} onSubmit={handleRegister}>
           <h1>Novo Produto</h1>
 
           <form className={styles.form}>
@@ -92,14 +128,17 @@ export default function Product({ categoriesList }: CategoryProps) {
               })}
             </select>
 
-            <input type="text" className={styles.input}
-                placeholder="Digite o nome do produto" />
+            <input type="text" className={styles.input} value={name}
+                placeholder="Digite o nome do produto" 
+                onChange={(e) => setName(e.target.value)} />
 
-            <input type="text" className={styles.input}
-                placeholder="Preço do produto" />      
+            <input type="text" className={styles.input} value={price}
+                placeholder="Preço do produto"
+                onChange={(e) => setPrice(e.target.value)} />      
 
-            <textarea className={styles.input}
-                placeholder="Descreva seu produto..." /> 
+            <textarea className={styles.input} value={description}
+                placeholder="Descreva seu produto..."
+                onChange={(e) => setDescription(e.target.value)} /> 
 
             <button className={styles.buttonAdd} type="submit">
               Cadastrar  
