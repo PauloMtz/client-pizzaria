@@ -6,10 +6,26 @@ import { FiUpload } from 'react-icons/fi';
 import styles from './styles.module.scss';
 import { Header } from '../../components/Header/index';
 import { usuariosLogados } from '../../utils/usuariosLogados';
+import { setupApiClient } from '../../services/api';
 
-export default function Product() {
+// 2. transforma em props
+type ItemProps = {
+  id: string;
+  name: string;
+}
+
+// 3. transforma em interface
+interface CategoryProps {
+  categoriesList: ItemProps[];
+}
+
+export default function Product({ categoriesList }: CategoryProps) {
+  //console.log(categoriesList);
+
   const [avatarUrl, setAvatarUrl] = useState('');
   const [imageAvatar, setImageAvatar] = useState(null);
+  const [categories, setCategories] = useState(categoriesList || []);
+  const [categorySelected, setCategorySelected] = useState(0);
 
   function handleFile(event: ChangeEvent<HTMLInputElement>) {
     // verifica se enviou algum arquivo
@@ -29,6 +45,14 @@ export default function Product() {
       setImageAvatar(image);
       setAvatarUrl(URL.createObjectURL(event.target.files[0]));
     }
+  }
+
+  // quando o usuário seleciona uma categoria na lista
+  function handleChangeCategory(event) {
+    //console.log("Categoria selecionada: ", categories[event.target.value]);
+    //console.log("Posição na lista: ", event.target.value);
+
+    setCategorySelected(event.target.value);
   }
 
   return (
@@ -58,9 +82,14 @@ export default function Product() {
               )}
             </label>
 
-            <select>
-              <option>Bebida</option>
-              <option>Pizzas</option>
+            <select value={categorySelected} onChange={handleChangeCategory}>
+              {categories.map((item, index) => {
+                return (
+                  <option key={item.id} value={index}>
+                    { item.name }
+                  </option>
+                )
+              })}
             </select>
 
             <input type="text" className={styles.input}
@@ -82,9 +111,18 @@ export default function Product() {
   )
 }
 
+// 1. pega a lista no banco
 export const getServerSideProps = usuariosLogados(async (ctx) => {
+  const apiClient = setupApiClient(ctx);
+
+  // pegar as categorias para preencher o combobox
+  const response = await apiClient.get('/api/categories');
+
+  //console.log(response.data);
 
   return {
-    props: {}
+    props: {
+      categoriesList: response.data
+    }
   }
 });
