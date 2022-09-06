@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Head from "../../../node_modules/next/head";
 import { Header } from "../../components/Header/index";
 import { usuariosLogados } from "../../utils/usuariosLogados"
@@ -5,7 +6,28 @@ import styles from './styles.module.scss';
 
 import { FiRefreshCcw } from 'react-icons/fi';
 
-export default function Dashboard() {
+import { setupApiClient } from "../../services/api";
+import { toast } from "react-toastify";
+
+type OrdersItems = {
+    id: string;
+    table: string | number;
+    status: boolean;
+    draft: boolean;
+    name: string | null;
+}
+
+interface OrdersProps {
+    orders: OrdersItems[];
+}
+
+export default function Dashboard({ orders }: OrdersProps) {
+    const [ordersList, setOrdersList] = useState(orders || []);
+
+    function handleOpenModalView(id: string) {
+        alert("Mesa: " + id);
+    }
+
     return (
         <>
             <Head>
@@ -23,20 +45,28 @@ export default function Dashboard() {
                 </div>
 
                 <article className={styles.listOreders}>
-                    <section className={styles.orderItem}> 
-                        <button>
-                            <div className={styles.tag}></div>
-                            <span>Mesa 30</span>
-                        </button>
-                    </section>                  
+                    {ordersList.map(item => (
+                        <section className={styles.orderItem}
+                            key={item.id}> 
+                            <button onClick={() => handleOpenModalView(item.id)}>
+                                <div className={styles.tag}></div>
+                                <span>Mesa: {item.table}</span>
+                            </button>
+                        </section>  
+                    ))}               
                 </article>
             </main>
         </>
     )
 }
 
-export const getServerSideProps = usuariosLogados(async (context) => {
+export const getServerSideProps = usuariosLogados(async (ctx) => {
+    const apiClient = setupApiClient(ctx);
+    const response = await apiClient.get('/api/orders/send');
+
     return {
-        props: {}
+        props: {
+            orders: response.data
+        }
     }
 });
