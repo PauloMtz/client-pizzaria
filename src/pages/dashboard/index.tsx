@@ -4,10 +4,11 @@ import { Header } from "../../components/Header/index";
 import { usuariosLogados } from "../../utils/usuariosLogados"
 import styles from './styles.module.scss';
 
-import { FiRefreshCcw } from 'react-icons/fi';
+import { FiRefreshCcw } from "react-icons/fi";
 
 import { setupApiClient } from "../../services/api";
-import { toast } from "react-toastify";
+import Modal from "react-modal"; // yarn add react-modal // yarn add @types/react-modal -D
+import { ModalOrders } from "../../components/ModalOrders";
 
 type OrdersItems = {
     id: string;
@@ -21,12 +22,53 @@ interface OrdersProps {
     orders: OrdersItems[];
 }
 
+export type OrderItemProps = {
+    id: string;
+    amount: number;
+    order_id: string;
+    product_id: string;
+    product: {
+      id: string;
+      name: string;
+      description: string;
+      price: string;
+      banner: string;
+    }
+    order: {
+      id: string;
+      table: string | number;
+      status: boolean;
+      name: string | null;
+    }
+}
+
 export default function Dashboard({ orders }: OrdersProps) {
     const [ordersList, setOrdersList] = useState(orders || []);
 
-    function handleOpenModalView(id: string) {
-        alert("Mesa: " + id);
+    const [modalItem, setModalItem] = useState<OrderItemProps[]>();
+    const [modalVisible, setModalVisible] = useState(false);
+
+    function handleCloseModal(){
+        setModalVisible(false);
     }
+
+    async function handleOpenModalView(id: string) {
+        //alert("Mesa: " + id);
+
+        const apiClient = setupApiClient(); 
+
+        const response = await apiClient.get('/api/orders/details', {
+            params: {
+                order_id: id,
+            }
+        });
+
+        setModalItem(response.data);
+        setModalVisible(true);
+    }
+
+    // esse '__next' é o id da div da página <></> (ver código fonte da página)
+    Modal.setAppElement('#__next');
 
     return (
         <>
@@ -56,6 +98,9 @@ export default function Dashboard({ orders }: OrdersProps) {
                     ))}               
                 </article>
             </main>
+            { modalVisible && (
+                <ModalOrders />
+            )}
         </>
     )
 }
