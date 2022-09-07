@@ -99,7 +99,9 @@ export default function Dashboard({ orders }: OrdersProps) {
                 </article>
             </main>
             { modalVisible && (
-                <ModalOrders />
+                <ModalOrders isOpen={modalVisible}
+                    onRequestClose={handleCloseModal}
+                    order={modalItem} />
             )}
         </>
     )
