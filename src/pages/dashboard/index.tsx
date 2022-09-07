@@ -67,6 +67,27 @@ export default function Dashboard({ orders }: OrdersProps) {
         setModalVisible(true);
     }
 
+    async function handleFinishItem(id: string) {
+        //alert("Pedido: " + id);
+        const apiClient = setupApiClient();
+        await apiClient.put('/api/orders/finish', {
+        order_id: id,
+        })
+
+        // atualiza a lista de pedidos
+        const response = await apiClient.get('/api/orders/send');
+
+        setOrdersList(response.data);
+        setModalVisible(false);
+    }
+
+    async function handleRefreshOrders(){
+        const apiClient = setupApiClient();
+    
+        const response = await apiClient.get('/api/orders/send')
+        setOrdersList(response.data);
+    }
+
     // esse '__next' é o id da div da página <></> (ver código fonte da página)
     Modal.setAppElement('#__next');
 
@@ -81,10 +102,14 @@ export default function Dashboard({ orders }: OrdersProps) {
             <main className={styles.container}>
                 <div className={styles.containerHeader}>
                     <h1>Últimos pedidos</h1>
-                    <button>
+                    <button onClick={handleRefreshOrders}>
                         <FiRefreshCcw size={25} color="#3fffa3"/>
                     </button>
                 </div>
+
+                {ordersList.length === 0 && (
+                    <span className={styles.emptyList}>Não há nenhum pedido em aberto no momento...</span>
+                )}
 
                 <article className={styles.listOreders}>
                     {ordersList.map(item => (
@@ -99,9 +124,9 @@ export default function Dashboard({ orders }: OrdersProps) {
                 </article>
             </main>
             { modalVisible && (
-                <ModalOrders isOpen={modalVisible}
+                <ModalOrders isOpen={modalVisible} order={modalItem}
                     onRequestClose={handleCloseModal}
-                    order={modalItem} />
+                    handleFinishOrder={ handleFinishItem } />
             )}
         </>
     )
